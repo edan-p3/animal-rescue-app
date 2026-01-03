@@ -1,0 +1,140 @@
+// This is your Prisma schema file
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(uuid())
+  email          String   @unique
+  passwordHash   String   @map("password_hash")
+  name           String
+  role           String   // rescuer, vet, foster, adoption_coordinator, admin
+  phone          String?
+  avatarUrl      String?  @map("avatar_url")
+  organization   String?
+  location       String?
+  isActive       Boolean  @default(true) @map("is_active")
+  emailVerified  Boolean  @default(false) @map("email_verified")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  ownedCases      Case[]          @relation("CaseOwner")
+  collaborations  CaseCollaborator[]
+  photos          Photo[]
+  activityLogs    ActivityLog[]
+  refreshTokens   RefreshToken[]
+  addedCollaborators CaseCollaborator[] @relation("AddedBy")
+
+  @@map("users")
+}
+
+model Case {
+  id                    String   @id @default(uuid())
+  species               String
+  description           String?
+  status                String   // reported, rescued, at_vet, surgery, at_foster, adoption_talks, adopted
+  urgency               String   // high, medium, low
+  locationFound         String   @map("location_found")
+  locationFoundGeneral  String?  @map("location_found_general")
+  locationCurrent       String?  @map("location_current")
+  dateRescued           DateTime? @map("date_rescued")
+  conditionDescription  String?  @map("condition_description")
+  injuries              String?
+  treatments            String?
+  medications           String?
+  specialNeeds          String?  @map("special_needs")
+  dietaryRequirements   String?  @map("dietary_requirements")
+  behaviorNotes         String?  @map("behavior_notes")
+  publicNotes           String?  @map("public_notes")
+  isPublic              Boolean  @default(true) @map("is_public")
+  primaryOwnerId        String   @map("primary_owner_id")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  primaryOwner    User               @relation("CaseOwner", fields: [primaryOwnerId], references: [id])
+  collaborators   CaseCollaborator[]
+  photos          Photo[]
+  activityLogs    ActivityLog[]
+
+  @@index([primaryOwnerId], name: "idx_cases_primary_owner")
+  @@index([status], name: "idx_cases_status")
+  @@index([urgency], name: "idx_cases_urgency")
+  @@index([updatedAt(sort: Desc)], name: "idx_cases_updated_at")
+  @@map("cases")
+}
+
+model CaseCollaborator {
+  id        String   @id @default(uuid())
+  caseId    String   @map("case_id")
+  userId    String   @map("user_id")
+  addedBy   String?  @map("added_by")
+  roleLabel String?  @map("role_label")
+  addedAt   DateTime @default(now()) @map("added_at")
+
+  // Relations
+  case        Case  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  user        User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  addedByUser User? @relation("AddedBy", fields: [addedBy], references: [id])
+
+  @@unique([caseId, userId])
+  @@index([userId], name: "idx_case_collaborators_user")
+  @@index([caseId], name: "idx_case_collaborators_case")
+  @@map("case_collaborators")
+}
+
+model Photo {
+  id           String   @id @default(uuid())
+  caseId       String   @map("case_id")
+  url          String
+  thumbnailUrl String?  @map("thumbnail_url")
+  uploadedBy   String?  @map("uploaded_by")
+  orderIndex   Int      @default(0) @map("order_index")
+  isPrimary    Boolean  @default(false) @map("is_primary")
+  uploadedAt   DateTime @default(now()) @map("uploaded_at")
+
+  // Relations
+  case         Case  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  uploader     User? @relation(fields: [uploadedBy], references: [id])
+
+  @@index([caseId], name: "idx_photos_case")
+  @@map("photos")
+}
+
+model ActivityLog {
+  id          String   @id @default(uuid())
+  caseId      String   @map("case_id")
+  userId      String?  @map("user_id")
+  actionType  String   @map("action_type")
+  description String
+  metadata    Json?
+  isPublic    Boolean  @default(true) @map("is_public")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  case  Case  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  user  User? @relation(fields: [userId], references: [id])
+
+  @@index([caseId], name: "idx_activity_log_case")
+  @@map("activity_log")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  tokenHash String   @unique @map("token_hash")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+

@@ -1,26 +1,43 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #2D9B9B;
+  --color-primary-hover: #268080;
+  --color-accent: #FF6B6B;
+  --color-accent-hover: #FA5252;
+  
+  --color-urgency-high: #E74C3C;
+  --color-urgency-medium: #F39C12;
+  --color-urgency-low: #27AE60;
+  
+  --color-status-success: #27AE60;
+  --color-status-warning: #F39C12;
+  --color-status-error: #E74C3C;
+
+  --color-gray-light: #F5F7FA;
+  --color-gray-medium: #95A5A6;
+  --color-gray-dark: #2C3E50;
+  
+  --color-background: var(--color-gray-light);
+  --color-foreground: var(--color-gray-dark);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Explicit variables for non-Tailwind use if needed, but @theme handles utility classes */
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Custom Utilities */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
