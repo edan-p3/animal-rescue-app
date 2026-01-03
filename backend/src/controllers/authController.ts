@@ -7,7 +7,10 @@ export class AuthController {
   async register(req: Request, res: Response, next: NextFunction) {
     try {
       const validatedData = registerSchema.parse(req.body);
-      const result = await authService.register(validatedData);
+      const result = await authService.register({
+        ...validatedData,
+        role: validatedData.role as string,
+      });
       res.status(201).json(result);
     } catch (error) {
       next(error);

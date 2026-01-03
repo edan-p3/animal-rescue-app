@@ -9,7 +9,7 @@ export const registerSchema = z.object({
     .regex(/[A-Za-z]/, 'Password must contain at least one letter')
     .regex(/[0-9]/, 'Password must contain at least one number'),
   name: z.string().min(2, 'Name must be at least 2 characters').max(255),
-  role: z.enum(VALID_ROLES as [string, ...string[]]),
+  role: z.enum(VALID_ROLES as any),
   phone: z.string().optional(),
   organization: z.string().optional(),
 });
@@ -25,10 +25,10 @@ export const refreshTokenSchema = z.object({
 
 // Case validation schemas
 export const createCaseSchema = z.object({
-  species: z.enum(VALID_SPECIES as [string, ...string[]]),
+  species: z.enum(VALID_SPECIES as any),
   description: z.string().max(5000).optional(),
-  status: z.enum(VALID_STATUSES as [string, ...string[]]),
-  urgency: z.enum(VALID_URGENCIES as [string, ...string[]]),
+  status: z.enum(VALID_STATUSES as any),
+  urgency: z.enum(VALID_URGENCIES as any),
   locationFound: z.string().min(1, 'Location found is required').max(255),
   locationCurrent: z.string().max(255).optional(),
   dateRescued: z.string().datetime().optional(),
@@ -46,9 +46,9 @@ export const createCaseSchema = z.object({
 export const updateCaseSchema = createCaseSchema.partial();
 
 export const caseQuerySchema = z.object({
-  status: z.enum(VALID_STATUSES as [string, ...string[]]).optional(),
-  species: z.enum(VALID_SPECIES as [string, ...string[]]).optional(),
-  urgency: z.enum(VALID_URGENCIES as [string, ...string[]]).optional(),
+  status: z.enum(VALID_STATUSES as any).optional(),
+  species: z.enum(VALID_SPECIES as any).optional(),
+  urgency: z.enum(VALID_URGENCIES as any).optional(),
   search: z.string().optional(),
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
@@ -72,7 +72,7 @@ export const transferOwnershipSchema = z.object({
 
 export const userCasesQuerySchema = z.object({
   filter: z.enum(['my_cases', 'collaborating', 'all']).default('my_cases'),
-  status: z.enum(VALID_STATUSES as [string, ...string[]]).optional(),
+  status: z.enum(VALID_STATUSES as any).optional(),
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
 });

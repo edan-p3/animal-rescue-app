@@ -7,7 +7,7 @@ import { ErrorCode, AuthResponse, JWTPayload } from '../types';
 import logger from '../utils/logger';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-const JWT_ACCESS_EXPIRY = process.env.JWT_ACCESS_EXPIRY || '15m';
+const JWT_ACCESS_EXPIRY: string = process.env.JWT_ACCESS_EXPIRY || '15m';
 const JWT_REFRESH_EXPIRY = process.env.JWT_REFRESH_EXPIRY || '7d';
 const BCRYPT_ROUNDS = 12;
 
@@ -208,9 +208,11 @@ export class AuthService {
       role: user.role,
     };
 
-    const access_token = jwt.sign(payload, JWT_SECRET, {
-      expiresIn: JWT_ACCESS_EXPIRY,
-    });
+    const signOptions: jwt.SignOptions = {
+      expiresIn: JWT_ACCESS_EXPIRY as any,
+    };
+
+    const access_token = jwt.sign(payload, JWT_SECRET, signOptions);
 
     // Generate refresh token
     const refresh_token = crypto.randomBytes(64).toString('hex');
