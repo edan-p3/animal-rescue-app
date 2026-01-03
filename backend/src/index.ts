@@ -18,7 +18,7 @@ dotenv.config();
 
 const app: Application = express();
 const httpServer = createServer(app);
-const PORT = process.env.PORT || 3000; // Railway sets PORT to 8000
+const PORT = process.env.PORT || 3000; // Railway automatically sets PORT
 
 // Initialize WebSocket
 initializeWebSocket(httpServer);
