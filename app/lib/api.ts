@@ -137,7 +137,7 @@ class ApiClient {
     search?: string;
     page?: number;
     limit?: number;
-  }) {
+  }): Promise<{ cases: any[]; total: number; page: number; totalPages: number }> {
     const queryParams = new URLSearchParams();
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
