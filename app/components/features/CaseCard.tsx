@@ -8,7 +8,7 @@ import { Button } from "@/app/components/ui/Button"
 import { cn } from "@/app/lib/utils"
 
 interface CaseCardProps {
-  caseData: CaseType
+  caseData: Case
 }
 
 export function CaseCard({ caseData }: CaseCardProps) {
