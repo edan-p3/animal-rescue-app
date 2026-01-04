@@ -1,11 +1,40 @@
+'use client'
+
+import { useState, useEffect } from "react"
 import { Filters } from "@/app/components/features/Filters"
 import { CaseCard } from "@/app/components/features/CaseCard"
 import { ActivityFeed } from "@/app/components/features/ActivityFeed"
 import { Button } from "@/app/components/ui/Button"
 import { MOCK_CASES } from "@/app/lib/mock-data"
+import { Case } from "@/app/lib/types"
+import { api } from "@/app/lib/api"
 import { Heart, Activity, Home as HomeIcon, CheckCircle } from "lucide-react"
 
 export default function Home() {
+  const [cases, setCases] = useState<Case[]>(MOCK_CASES)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchCases() {
+      try {
+        setLoading(true)
+        const response = await api.getPublicCases({ page: 1, limit: 20 })
+        if (response.cases && response.cases.length > 0) {
+          setCases(response.cases)
+        }
+      } catch (err) {
+        console.error('Failed to fetch cases:', err)
+        setError('Failed to load cases. Using demo data.')
+        // Keep using mock data on error
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCases()
+  }, [])
+
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
       {/* Header Stats */}
@@ -40,12 +69,18 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {MOCK_CASES.map((caseData) => (
-              <CaseCard key={caseData.id} caseData={caseData} />
-            ))}
+            {loading ? (
+              <div className="col-span-full text-center py-12">
+                <p className="text-gray-500 text-lg">Loading cases...</p>
+              </div>
+            ) : (
+              cases.map((caseData) => (
+                <CaseCard key={caseData.id} caseData={caseData} />
+              ))
+            )}
           </div>
           
-          {MOCK_CASES.length === 0 && (
+          {!loading && cases.length === 0 && (
              <div className="text-center py-12">
                <p className="text-gray-500 text-lg">No active cases at the moment 🎉</p>
              </div>
