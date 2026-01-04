@@ -1,8 +1,7 @@
 import Link from "next/link"
 import { formatDistanceToNow } from "date-fns"
 import { MapPin, Clock, AlertCircle } from "lucide-react"
-import { Case } from "@/app/lib/utils" // Wait, types are in lib/types
-import { Case as CaseType } from "@/app/lib/types"
+import { Case } from "@/app/lib/types"
 import { Card, CardContent, CardFooter, CardHeader } from "@/app/components/ui/Card"
 import { Badge } from "@/app/components/ui/Badge"
 import { Button } from "@/app/components/ui/Button"
