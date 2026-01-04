@@ -32,7 +32,7 @@ export function CaseCard({ caseData }: CaseCardProps) {
 
   return (
     <Card className="overflow-hidden card-hover h-full flex flex-col">
-      <div className="relative aspect-video bg-gray-200">
+      <div className="relative w-full h-56 bg-gray-200">
         {caseData.photos[0] ? (
           <img 
             src={caseData.photos[0].thumbnail_url || caseData.photos[0].url} 
